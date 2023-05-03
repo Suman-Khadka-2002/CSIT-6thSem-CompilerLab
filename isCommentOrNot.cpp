@@ -1,49 +1,31 @@
-// Program to simulate DFA for the language over alphabet={0, 1} starting with 0 and ending with 1.
+// program to identify a given line is a comment or not.
 
 #include <bits/stdc++.h>
 using namespace std;
 
-int main()
+int main() 
 {
-    char string[100], start_state = 'A';
+    string line;
+    int i = 2, flag = 0;
+
     cout<<"Enter the input string: ";
-    cin>>string;
+    cin>>line;
 
-    for (int i=0 ; string[i]!= '\0' ; i++)
-    {
-        switch(start_state) 
-        {
-            case 'A':
-                if (string[i] == '0')
-                    start_state = 'B';
-                else if(string[i] == '1')
-                    start_state = 'D';
-                break;
-
-            case 'B':
-                if (string[i] == '0')
-                    start_state = 'B';
-                else if (string[i] == '1')
-                    start_state = 'C';
-                break;
-
-            case 'C':
-                if (string[i] == '0')
-                    start_state = 'B';
-                else if (string[i] == '1')
-                    start_state = 'C';
-                break;
-            
-            case 'D':
-                if (string[i] == '0' || string[i] == '1')
-                    start_state = 'D';
-                break;
-        }
-
+    if (line[0] == '/' && line[1] == '/') {
+            cout<<"the input string is a single line comment.";
+            flag = 1;
     }
-        if(start_state == 'C')
-            cout<<"The given string "<<string<< " is accepted.";
-        else
-            cout<<"The input string "<<string<<" is not accepted.";
-        return 0;
+
+    for (int i=0 ; i<line.length() ; i++) {
+        if ((line[0] == '/' && line[1] == '*') && (line[i] == '*' && line[i+1] == '/')) {
+            cout<<"The input string is a multi-line comment.";
+            flag = 1;
+            
+        }
+    }
+
+    if (flag == 0) {
+        cout<<"the input string is not a comment.";
+    }
+    return 0;
 }
