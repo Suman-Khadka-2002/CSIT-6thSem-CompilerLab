@@ -1,4 +1,4 @@
-// c program to remove left recursion of the grammar.
+// C program to remove left recursion of the grammar.
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -44,6 +44,8 @@ int main()
         else
             printf("This Grammar CAN'T be REDUCED.\n");
     }
-    else
+    else {
         printf("\n This Grammar is not LEFT RECURSIVE.\n");
+    }
+    return 0;
 }
