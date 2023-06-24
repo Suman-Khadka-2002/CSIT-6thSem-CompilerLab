@@ -1,3 +1,5 @@
+// C program to compute the FIRST of given grammar.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
