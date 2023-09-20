@@ -1,65 +1,105 @@
 // C program to compute the FIRST of given grammar.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define MAX_PRODUCTIONS 10
-#define MAX_SYMBOLS 10
-
-typedef struct {
-    char lhs;
-    char rhs[MAX_SYMBOLS];
-} Production;
-
-int isTerminal(char symbol) {
-    return (symbol >= 'a' && symbol <= 'z');
-}
-
-int isNonTerminal(char symbol) {
-    return (symbol >= 'A' && symbol <= 'Z');
-}
-
-void computeFirstSet(Production* productions, int numProductions, char symbol, char* firstSet) {
+#include<stdio.h>
+#include<ctype.h>
+void FIRST(char[],char );
+void addToResultSet(char[],char);
+int numOfProductions;
+char productionSet[10][10];
+main()
+{
     int i;
-    for (i = 0; i < numProductions; i++) {
-        if (productions[i].lhs == symbol) {
-            char firstSymbol = productions[i].rhs[0];
-            if (isTerminal(firstSymbol)) {
-                firstSet[firstSymbol - 'a'] = 1;
-            } else if (isNonTerminal(firstSymbol)) {
-                computeFirstSet(productions, numProductions, firstSymbol, firstSet);
+    char choice; 
+    char c;
+    char result[20];
+    printf("How many number of productions ? :");
+    scanf(" %d",&numOfProductions);
+	printf("Enter productions grammar  : ");
+    for(i=0;i<numOfProductions;i++)//read production string eg: E=E+T
+    {
+        
+        scanf(" %s",productionSet[i]);
+    }
+    do
+    {
+        printf("\n Find the FIRST of  :");
+        scanf(" %c",&c);
+        FIRST(result,c); //Compute FIRST; Get Answer in 'result' array
+        printf("\n FIRST(%c)= { ",c);
+        for(i=0;result[i]!='\0';i++)
+        printf(" %c ",result[i]);       //Display result
+        printf("}\n");
+         printf("press 'y' to continue : ");
+        scanf(" %c",&choice);
+    }
+    while(choice=='y'||choice =='Y');
+}
+/*
+ *Function FIRST:
+ *Compute the elements in FIRST(c) and write them
+ *in Result Array.
+ */
+void FIRST(char* Result,char c)
+{
+    int i,j,k;
+    char subResult[20];
+    int foundEpsilon;
+    subResult[0]='\0';
+    Result[0]='\0';
+    //If X is terminal, FIRST(X) = {X}.
+    if(!(isupper(c)))
+    {
+        addToResultSet(Result,c);
+               return ;
+    }
+    //If X is non terminal
+    //Read each production
+    for(i=0;i<numOfProductions;i++)
+    {
+//Find production with X as LHS
+        if(productionSet[i][0]==c)
+        {
+//If X ? e is a production, then add e to FIRST(X).
+ if(productionSet[i][2]=='$') addToResultSet(Result,'$');
+            //If X is a non-terminal, and X ? Y1 Y2 � Yk
+            //is a production, then add a to FIRST(X)
+            //if for some i, a is in FIRST(Yi),
+            //and e is in all of FIRST(Y1), �, FIRST(Yi-1).
+      else
+            {
+                j=2;
+                while(productionSet[i][j]!='\0')
+                {
+                foundEpsilon=0;
+                FIRST(subResult,productionSet[i][j]);
+                for(k=0;subResult[k]!='\0';k++)
+                    addToResultSet(Result,subResult[k]);
+                 for(k=0;subResult[k]!='\0';k++)
+                     if(subResult[k]=='$')
+                     {
+                         foundEpsilon=1;
+                         break;
+                     }
+                 //No e found, no need to check next element
+                 if(!foundEpsilon)
+                     break;
+                 j++;
+                }
             }
-        }
     }
 }
-
-int main() {
-    Production productions[MAX_PRODUCTIONS];
-    int numProductions;
-    char symbol;
-    char firstSet[MAX_SYMBOLS] = {0};
-
-    printf("Enter the number of productions: ");
-    scanf("%d", &numProductions);
-
-    printf("Enter the productions in the form 'A->alpha' (without spaces):\n");
-    for (int i = 0; i < numProductions; i++) {
-        scanf(" %c->%s", &productions[i].lhs, productions[i].rhs);
-    }
-
-    printf("Enter the symbol to compute its FIRST set: ");
-    scanf(" %c", &symbol);
-
-    computeFirstSet(productions, numProductions, symbol, firstSet);
-
-    printf("FIRST(%c) = {", symbol);
-    for (int i = 0; i < MAX_SYMBOLS; i++) {
-        if (firstSet[i] == 1) {
-            printf("%c ", i + 'a');
-        }
-    }
-    printf("}\n");
-
-    return 0;
+    return ;
+}
+/* addToResultSet adds the computed
+ *element to result set. 
+ *This code avoids multiple inclusion of elements
+  */
+void addToResultSet(char Result[],char val)
+{
+    int k;
+    for(k=0 ;Result[k]!='\0';k++)
+        if(Result[k]==val)
+            return;
+    Result[k]=val;
+    Result[k+1]='\0';
 }
