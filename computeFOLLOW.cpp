@@ -1,67 +1,89 @@
 #include<stdio.h>
 #include<string.h>
 #include<ctype.h>
-int n,m=0,p,i=0,j=0;
-char a[10][10],f[10];
-void follow(char c);
-void first(char c);
+
+int n,p,i=0,j=0;
+char a[10][10],Result[10];
+char subResult[20];
+
+void follow(char* Result,char c);
+void first(char* Result,char c);
+void addToResultSet(char[],char);
+
 int main()
-  {
-  int i,z;
+{
+  int i;
+  int choice;
   char c,ch;
-  printf("Enter the no.of productions:");
-  scanf("%d",&n);
-  printf("Enter the productions(epsilon=$):\n");
+  printf("Enter the no.of productions: ");
+  scanf("%d", &n);
+  printf(" Enter %d productions\nProduction with multiple terms should be give as separate productions \n", n);
   for(i=0;i<n;i++)
-    scanf("%s%c",a[i],&ch);
-
+  scanf("%s",a[i]);
   do
-  {
-    m=0;
-    printf("Enter the element whose FOLLOW is to be found:");
-
-    scanf("%c",&c);
-    follow(c);
-    printf("FOLLOW(%c) = { ",c);
-    for(i=0;i<m;i++)
-    printf("%c ",f[i]);
-    printf(" }\n");
-    printf("Do you want to continue(0/1)?");
-    scanf("%d%c",&z,&ch);
-  }
-  while(z==1);
-  }
-  void follow(char c)
-  {
-
-  if(a[0][0]==c)f[m++]='$';
-  for(i=0;i<n;i++)
-  {
-    for(j=2;j<strlen(a[i]);j++)
     {
-    if(a[i][j]==c)
-    {
-      if(a[i][j+1]!='\0')first(a[i][j+1]);
-
-      if(a[i][j+1]=='\0'&&c!=a[i][0])
-      follow(a[i][0]);
-
-    }
-    }
+      printf("Find FOLLOW of -->");
+      scanf(" %c",&c);
+      follow(Result,c);
+      printf("FOLLOW(%c) = { ",c);
+      for(i=0;Result[i]!='\0';i++)
+        printf(" %c ",Result[i]);
+      printf(" }\n");
+      printf("Do you want to continue(Press 1 to continue....)?");
+      scanf("%d",&choice);
+    }while(choice==1);
   }
-  }
-  void first(char c)
+
+  void follow(char* Result,char c)
   {
-        int k;
-                  if(!(isupper(c)))f[m++]=c;
-                  for(k=0;k<n;k++)
-                  {
-                  if(a[k][0]==c)
-                  {
-                  if(a[k][2]=='$') follow(a[i][0]);
-                  else if(islower(a[k][2]))f[m++]=a[k][2];
-                  else first(a[k][2]);
-                  }
-                  }
+    int k;
+    subResult[0]='\0';
+    Result[0]='\0';
+    if(a[0][0]==c)addToResultSet(Result,'$');
+    for(i=0;i<n;i++)
+    {
+      for(j=2;j<strlen(a[i]);j++)
+        {
+          if(a[i][j]==c)
+            {
+              if(a[i][j+1]!='\0')first(subResult,a[i][j+1]);
+              if(a[i][j+1]=='\0'&&c!=a[i][0])
+                follow(subResult,a[i][0]);
+              for(k=0;subResult[k]!='\0';k++)
+                addToResultSet(Result,subResult[k]);
+            }
+        }
+    }
+}
 
+void first(char* R,char c)
+{
+  int k,m;
+  if(!(isupper(c))&&c!='#')
+  addToResultSet(R,c);
+  for(k=0;k<n;k++)
+  {
+    if(a[k][0]==c)
+    {
+      if(a[k][2]=='#'&&c!=a[i][0])follow(R,a[i][0]);
+
+      else if((!(isupper(a[k][2])))&&a[k][2]!='#')
+        addToResultSet(R,a[k][2]);
+      else 
+        first(R,a[k][2]);
+      for(m=0;R[m]!='\0';m++)
+        addToResultSet(Result,R[m]);
+    }
   }
+}
+
+void addToResultSet(char Result[],char val)
+{
+  int k;
+  for(k=0 ;Result[k]!='\0';k++)
+    if(Result[k]==val)
+      return;
+  Result[k]=val;
+  Result[k+1]='\0';
+}
+
